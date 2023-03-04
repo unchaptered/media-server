@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
 import { join } from 'path';
+import { readFileSync } from 'fs';
 
 export default (() => ({
     JWT_PRIVATE_KEY: readFileSync(join(process.cwd(), 'private.pem'), { encoding: 'utf8' }),

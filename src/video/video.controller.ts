@@ -1,8 +1,8 @@
 import { Controller, UseFilters, Get, Post } from '@nestjs/common';
 
 // layers
-import { VideoService } from './video.service';
-import { HttpExceptionFilter } from 'src/middlewares/exception.filter';
+import { VideoService } from '@video/video.service';
+import { HttpExceptionFilter } from '@middlewares/exception.filter';
 
 
 @Controller('video')

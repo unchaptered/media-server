@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './middlewares/exception.filter';
+import { HttpExceptionFilter } from '@middlewares/exception.filter';
 
 
 async function bootstrap() {

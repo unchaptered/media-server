@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 
 // Layer
-import { VideoController } from './video.controller';
-import { VideoService } from './video.service';
+import { VideoController } from '@video/video.controller';
+import { VideoService } from '@video/video.service';
 
-import { AwsModule } from 'src/aws/aws.module';
+import { AwsModule } from '@aws/aws.module';
 
 @Module({
   imports: [AwsModule],

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { AwsS3Service } from 'src/aws/aws.s3.service';
-import { AwsSqsService } from 'src/aws/aws.sqs.service';
+import { AwsS3Service } from '@aws/aws.s3.service';
+import { AwsSqsService } from '@aws/aws.sqs.service';
 
 @Injectable()
 export class VideoService {

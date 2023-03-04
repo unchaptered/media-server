@@ -25,13 +25,13 @@
     // Custom
     "esModuleInterop": true,
     "paths": {
-      "@users/*": ["src/users/*"],
-      "@email/*": ["src/email/*"],
-      "@phone/*": ["src/phone/*"],
-      "@items/*": ["src/items/*"],
-      "@notices/*": ["src/notices/*"],
+      "@aws/*": ["src/aws/*"],
+      "@config/*": ["src/config/*"],
+      "@middlewares/*": ["src/middlewares/*"],
       "@models/*": ["src/models/*"],
-      "@modules/*": ["src/modules/*"],
+      "@semaphore/*": ["src/semaphore/*"],
+      "@task/*": ["src/task/*"],
+      "@video/*": ["src/video/*"]
     }
   }
 }

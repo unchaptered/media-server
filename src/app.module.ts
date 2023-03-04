@@ -1,16 +1,19 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 // Config
-import configuration from './config/configuration';
-import { LoggerMiddleware } from './middlewares/log.middleware';
-import { PasswordHeaderMiddleware } from './middlewares/api.key.header.middleware';
+import configuration from '@config/configuration';
+import { LoggerMiddleware } from '@middlewares/log.middleware';
+import { PasswordHeaderMiddleware } from '@middlewares/api.key.header.middleware';
 
 // Module
-import { VideoModule } from './video/video.module';
+import { VideoModule } from '@video/video.module';
+import { SemaphoreModule } from '@semaphore/semaphore.module';
+import { TaskModule } from '@task/task.module';
 
 @Module({
   imports: [
@@ -40,7 +43,10 @@ import { VideoModule } from './video/video.module';
       }),
       inject: [ConfigService]
     }),
-    VideoModule
+    ScheduleModule.forRoot(),
+    TaskModule,
+    VideoModule,
+    SemaphoreModule
   ],
   controllers: [],
   providers: [],
