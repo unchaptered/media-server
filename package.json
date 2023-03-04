@@ -2,9 +2,9 @@
   "name": "media-server",
   "version": "beta",
   "description": "발행-구독을 이용한 영상 처리 서버 연동",
-  "author": "unchaptered",
-  "private": true,
-  "license": "UNLICENSED",
+  "author": "",
+  "private": "false",
+  "license": "MIT",
   "scripts": {
     "rimraf": "./node_modules/rimraf/bin.js",
     "prebuild": "rimraf dist",

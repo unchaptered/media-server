@@ -10,6 +10,7 @@ import { LoggerMiddleware } from './middlewares/log.middleware';
 import { PasswordHeaderMiddleware } from './middlewares/api.key.header.middleware';
 
 // Module
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { PasswordHeaderMiddleware } from './middlewares/api.key.header.middlewar
         namingStrategy: new SnakeNamingStrategy()
       }),
       inject: [ConfigService]
-    })
+    }),
+    VideoModule
   ],
   controllers: [],
   providers: [],
