@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, SendMessageCommand  } from '@aws-sdk/client-sqs';
-import { SQSClient, ReceiveMessageCommand, SendMessageCommand, DeleteMessageCommand  } from '@aws-sdk/client-sqs';
+import { SQSClient, ReceiveMessageCommand, SendMessageCommand, DeleteMessageCommand, Message, SendMessageCommandOutput, ReceiveMessageCommandOutput  } from '@aws-sdk/client-sqs';
 // import { SQSClient, ReceiveMessageCommand  } from '@aws-sdk/client-sqs';
 
 // layers
@@ -14,7 +14,59 @@ export class AwsSqsService {
         private readonly configService: ConfigService
     ) { }
 
-    async getSqsMessage() {
+    getSQSClient(): SQSClient {
+        return new SQSClient({
+            region: this.configService.get('AWS_SQS_REGION'),
+            credentials: {
+                accessKeyId: this.configService.get('AWS_SQS_ACCESS_KEY'),
+                secretAccessKey: this.configService.get('AWS_SQS_SECRET_KEY'),
+            }
+        });
+    }
+
+    async subMsgInReadyQueue(client: SQSClient): Promise<Message | null> {
+        const command = new ReceiveMessageCommand({
+            QueueUrl: this.configService.get('AWS_SQS_URL'),
+            MaxNumberOfMessages: 1
+        });
+        const { Messages } = await client.send(command);
+        if (!Messages || Messages.length === 0) return null;
+        else return Messages[0];
+    }
+
+    async delMsgInReadyQueue(client: SQSClient, message: Message): Promise<void> {
+        const command = new DeleteMessageCommand({
+            QueueUrl: this.configService.get('AWS_SQS_READY_QUEUE_URL'),
+            ReceiptHandle: message.ReceiptHandle
+        })
+        await client.send(command);
+    }
+
+    async subMsgInInProcessingQueue(client: SQSClient, message: SendMessageCommandOutput): Promise<ReceiveMessageCommandOutput> {
+        const command = new ReceiveMessageCommand({
+            QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
+            ReceiveRequestAttemptId: message.$metadata.requestId
+        })
+        return await client.send(command);
+    }
+
+    async pubMsgIntoInProcessingQueue(client: SQSClient, key: string): Promise<SendMessageCommandOutput> {
+        const command = new SendMessageCommand({
+            QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
+            MessageBody: key
+        });
+        return await client.send(command);
+    }
+
+    async delMsgInProcessingQueue(client: SQSClient, message: ReceiveMessageCommandOutput): Promise<void> {
+        const command = new DeleteMessageCommand({
+            QueueUrl: this.configService.get('AWS_SQS_READY_QUEUE_URL'),
+            ReceiptHandle: message.Messages[0].ReceiptHandle
+        })
+        await client.send(command);
+    }
+
+    async getPrototype() {
 
         const client = new SQSClient({
             region: this.configService.get('AWS_SQS_REGION'),

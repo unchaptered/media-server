@@ -26,12 +26,13 @@
     "esModuleInterop": true,
     "paths": {
       "@aws/*": ["src/aws/*"],
+      "@task/*": ["src/task/*"],
+      "@video/*": ["src/video/*"],
+      "@ffmpeg/*": ["src/ffmpeg/*"],
       "@config/*": ["src/config/*"],
-      "@middlewares/*": ["src/middlewares/*"],
       "@models/*": ["src/models/*"],
       "@semaphore/*": ["src/semaphore/*"],
-      "@task/*": ["src/task/*"],
-      "@video/*": ["src/video/*"]
+      "@middlewares/*": ["src/middlewares/*"]
     }
   }
 }

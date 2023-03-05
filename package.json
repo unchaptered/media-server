@@ -117,6 +117,7 @@
   "_moduleAliases": {
     "@aws": "dist/aws",
     "@config": "dist/config",
+    "@ffmpeg": "dist/ffmpeg",
     "@middlewares": "dist/middlewares",
     "@models": "dist/models",
     "@semaphore": "dist/semaphore",

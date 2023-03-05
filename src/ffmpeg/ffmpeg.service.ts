@@ -1,0 +1,31 @@
+import fs from 'fs';
+import path from 'path';
+import { Injectable } from '@nestjs/common';
+import { execSync } from 'child_process';
+
+@Injectable()
+export class FfmpegService {
+    
+    /**
+     * key는 'origin_aa.mp4'의 형태입니다.
+     * 
+     * @param filepath 
+     * @param key { string }
+     */
+    toH264(videoPath: string, key: string): { tempVideoPath: string, tempS3Key: string} {
+
+        // cvted_aa.mp4
+        const tempS3Key = 'cvted_'+ key.split('origin_').join('');
+        const tempVideoPath = path.join(process.cwd(), 'videos', tempS3Key);
+        const isExists = fs.existsSync(tempVideoPath);
+        if (isExists) return { tempVideoPath, tempS3Key };
+
+        execSync(`ffmpeg -i ${videoPath} -c:v libx264 -crf 23 -preset medium -c:a copy ${tempVideoPath}`);
+        
+        return { tempVideoPath, tempS3Key }
+        
+    }
+
+}
+
+

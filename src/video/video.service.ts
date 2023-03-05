@@ -16,7 +16,7 @@ export class VideoService {
     }
     
     async getImage() {
-        return await this.awsSqsService.getSqsMessage();
+        return await this.awsSqsService.getPrototype();
     }
 
 }
