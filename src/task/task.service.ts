@@ -6,11 +6,7 @@ import { SemaphoreService } from '@semaphore/semaphore.service';
 @Injectable()
 export class TaskService {
 
-    START_TID = 0;
-    END_TID = 0;
-    TIMEOUT = 10_000;
-
-    TEST_TIME = 10_000;
+    TASK_ID = 0;
 
     constructor(
         private readonly semaphoreService: SemaphoreService
@@ -19,11 +15,9 @@ export class TaskService {
     @Cron('*/5 * * * * *')
     handleCron() {
 
-        this.START_TID ++;
-        this.END_TID ++;
-        this.TIMEOUT ++;
+        this.TASK_ID ++;
 
-        this.semaphoreService.addNewWorker(this.START_TID, this.START_TID, this.TIMEOUT);
+        this.semaphoreService.addNewWorker(this.TASK_ID);
         
     }
 

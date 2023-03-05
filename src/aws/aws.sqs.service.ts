@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, SendMessageCommand  } from '@aws-sdk/client-sqs';
-import { SQSClient, ReceiveMessageCommand, SendMessageCommand, DeleteMessageCommand, Message, SendMessageCommandOutput, ReceiveMessageCommandOutput  } from '@aws-sdk/client-sqs';
+import { SQSClient, ReceiveMessageCommand, SendMessageCommand, DeleteMessageCommand, Message, SendMessageCommandOutput, ReceiveMessageCommandOutput } from '@aws-sdk/client-sqs';
+import { WorkerException } from '@models/exceptions/custon.exception';
 // import { SQSClient, ReceiveMessageCommand  } from '@aws-sdk/client-sqs';
 
 // layers
 
 @Injectable()
 export class AwsSqsService {
-    
+
     constructor(
         private readonly configService: ConfigService
     ) { }
@@ -25,45 +26,69 @@ export class AwsSqsService {
     }
 
     async subMsgInReadyQueue(client: SQSClient): Promise<Message | null> {
-        const command = new ReceiveMessageCommand({
-            QueueUrl: this.configService.get('AWS_SQS_URL'),
-            MaxNumberOfMessages: 1
-        });
-        const { Messages } = await client.send(command);
-        if (!Messages || Messages.length === 0) return null;
-        else return Messages[0];
+
+        try {
+
+            const command = new ReceiveMessageCommand({
+                QueueUrl: this.configService.get('AWS_SQS_URL'),
+                MaxNumberOfMessages: 1
+            });
+            const { Messages } = await client.send(command);
+            if (!Messages || Messages.length === 0) return null;
+            else return Messages[0];
+
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 1');
+        }
     }
 
     async delMsgInReadyQueue(client: SQSClient, message: Message): Promise<void> {
-        const command = new DeleteMessageCommand({
-            QueueUrl: this.configService.get('AWS_SQS_READY_QUEUE_URL'),
-            ReceiptHandle: message.ReceiptHandle
-        })
-        await client.send(command);
+        try {
+            const command = new DeleteMessageCommand({
+                QueueUrl: this.configService.get('AWS_SQS_READY_QUEUE_URL'),
+                ReceiptHandle: message.ReceiptHandle
+            })
+            await client.send(command);
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 4');
+        }
     }
 
     async subMsgInInProcessingQueue(client: SQSClient, message: SendMessageCommandOutput): Promise<ReceiveMessageCommandOutput> {
-        const command = new ReceiveMessageCommand({
-            QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
-            ReceiveRequestAttemptId: message.$metadata.requestId
-        })
-        return await client.send(command);
+        try {
+            const command = new ReceiveMessageCommand({
+                QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
+                ReceiveRequestAttemptId: message.$metadata.requestId
+            })
+            return await client.send(command);
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 7');
+        }
     }
 
     async pubMsgIntoInProcessingQueue(client: SQSClient, key: string): Promise<SendMessageCommandOutput> {
-        const command = new SendMessageCommand({
-            QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
-            MessageBody: key
-        });
-        return await client.send(command);
+        try {
+
+            const command = new SendMessageCommand({
+                QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
+                MessageBody: key
+            });
+            return await client.send(command);
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 2');
+        }
     }
 
     async delMsgInProcessingQueue(client: SQSClient, message: ReceiveMessageCommandOutput): Promise<void> {
-        const command = new DeleteMessageCommand({
-            QueueUrl: this.configService.get('AWS_SQS_READY_QUEUE_URL'),
-            ReceiptHandle: message.Messages[0].ReceiptHandle
-        })
-        await client.send(command);
+        try {
+            const command = new DeleteMessageCommand({
+                QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
+                ReceiptHandle: message.Messages[0].ReceiptHandle
+            })
+            await client.send(command);
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 7');
+        }
     }
 
     async getPrototype() {
@@ -82,12 +107,12 @@ export class AwsSqsService {
             QueueUrl: this.configService.get('AWS_SQS_URL'),
             MaxNumberOfMessages: 1
         });
-        const { Messages  } = await client.send(command);
+        const { Messages } = await client.send(command);
         if (!Messages || Messages.length === 0) return '무야호!';
-        
+
         const message = Messages[0];
         const imageKey = JSON.parse(message.Body).Records[0].s3.object.key
-        
+
         //  SEND 2 Ready Queue 에 구독 해제
         console.log('==============================SEND 2==============================');
         const delCommand = new DeleteMessageCommand({
@@ -95,9 +120,9 @@ export class AwsSqsService {
             ReceiptHandle: message.ReceiptHandle
         })
         await client.send(delCommand);
-        
+
         //  FFMPEG 을 가동
-        
+
         //  SEND 3 In-Processing Queue 발행
         console.log('==============================SEND 3==============================');
         const sendCommand = new SendMessageCommand({
@@ -105,7 +130,7 @@ export class AwsSqsService {
             MessageBody: imageKey
         });
         const sendResult = await client.send(sendCommand);
-        
+
         //  SEND 4 In-Processing Queue 구독
         console.log('==============================SEND 4==============================');
         const receiveSendCommand = new ReceiveMessageCommand({
@@ -113,7 +138,7 @@ export class AwsSqsService {
             ReceiveRequestAttemptId: sendResult.$metadata.requestId
         })
         const receiveSendResult = await client.send(receiveSendCommand);
-        
+
         const deleteCommand = new DeleteMessageCommand({
             QueueUrl: this.configService.get('AWS_SQS_IN_PROCESSING_QUEUE_URL'),
             ReceiptHandle: receiveSendResult.Messages[0].ReceiptHandle

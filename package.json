@@ -34,11 +34,12 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/schedule": "^2.2.0",
     "@nestjs/typeorm": "^9.0.1",
-    "chalk": "^5.2.0",
+    "chalk": "^4.1.2",
     "chardet": "^1.5.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cli-table3": "^0.6.2",
+    "dayjs": "^1.11.7",
     "emoji-regex": "^10.2.1",
     "esbuild-jest": "^0.5.0",
     "install": "^0.13.0",
@@ -95,22 +96,25 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^@aws/(.*)": "<rootDir>/../dist/aws/$1",
+      "^@task/(.*)": "<rootDir>/../dist/task/$1",
+      "^@video/(.*)": "<rootDir>/../dist/video/$1",
+      "^@chalk/(.*)": "<rootDir>/../dist/chalk/$1",
       "^@config/(.*)": "<rootDir>/../dist/config/$1",
-      "^@middlewares/(.*)": "<rootDir>/../dist/middlewares/$1",
+      "^@ffmpeg/(.*)": "<rootDir>/../dist/ffmpeg/$1",
       "^@models/(.*)": "<rootDir>/../dist/models/$1",
       "^@semaphore/(.*)": "<rootDir>/../dist/semaphore/$1",
-      "^@task/(.*)": "<rootDir>/../dist/task/$1",
-      "^@video/(.*)": "<rootDir>/../dist/video/$1"
+      "^@middlewares/(.*)": "<rootDir>/../dist/middlewares/$1"
     }
   },
   "_moduleAliases": {
     "@aws": "dist/aws",
+    "@task": "dist/task",
+    "@video": "dist/video",
+    "@chalk": "dist/chalk",
     "@config": "dist/config",
     "@ffmpeg": "dist/ffmpeg",
-    "@middlewares": "dist/middlewares",
     "@models": "dist/models",
     "@semaphore": "dist/semaphore",
-    "@task": "dist/task",
-    "@video": "dist/video"
+    "@middlewares": "dist/middlewares"
   }
 }

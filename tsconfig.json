@@ -31,6 +31,7 @@
       "@ffmpeg/*": ["src/ffmpeg/*"],
       "@config/*": ["src/config/*"],
       "@models/*": ["src/models/*"],
+      "@chalk/*": ["src/chalk/*"],
       "@semaphore/*": ["src/semaphore/*"],
       "@middlewares/*": ["src/middlewares/*"]
     }

@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { WorkerException } from '@models/exceptions/custon.exception';
 
 // layers
 
@@ -26,39 +27,43 @@ export class AwsS3Service {
     }
 
     async downloadFile(key: string): Promise<{ videoPath: string }> {
-
-        const videoPath = path.join(process.cwd(), 'videos', key);
-        const isExists = fs.existsSync(videoPath);
-        if (isExists) return { videoPath };
-
-        const client = this.getS3Client();
-        const command = new GetObjectCommand({
-            Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-            Key: key,
-        })
-        const videoS3 = await client.send(command);
-        const videoData = await videoS3.Body.transformToByteArray();
-        await fs.promises.writeFile(videoPath, videoData, { encoding:'utf8' });
-
-        return { videoPath };
-     
+        try {
+            const videoPath = path.join(process.cwd(), 'videos', key);
+            const isExists = fs.existsSync(videoPath);
+            if (isExists) return { videoPath };
+    
+            const client = this.getS3Client();
+            const command = new GetObjectCommand({
+                Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+                Key: key,
+            })
+            const videoS3 = await client.send(command);
+            const videoData = await videoS3.Body.transformToByteArray();
+            await fs.promises.writeFile(videoPath, videoData, { encoding:'utf8' });
+    
+            return { videoPath };
+        } catch (err) {
+            throw new WorkerException(err?.message, 'ERROR 3');
+        }
     }
 
     async uploadFile(videoFilePath: string, key: string): Promise<void> {
+try {
+    const videoFile = fs.readFileSync(videoFilePath, { encoding: 'utf8' });
+    
+    const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+        Key: key,
+        Body: videoFile
+    })
+    
+    const client = this.getS3Client();
+    await client.send(command);
 
-        const videoFile = fs.readFileSync(videoFilePath, { encoding: 'utf8' });
-        
-        const command = new PutObjectCommand({
-            Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-            Key: key,
-            Body: videoFile
-        })
-        
-        const client = this.getS3Client();
-        await client.send(command);
-
-        fs.unlinkSync(videoFilePath);
-
+    fs.unlinkSync(videoFilePath);
+} catch (err) {
+    throw new WorkerException(err?.message, 'ERROR 6');
+}
     }
 
     async getPresignedUrl(key: string) {

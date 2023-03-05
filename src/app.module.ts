@@ -9,7 +9,6 @@ import { PasswordHeaderMiddleware } from '@middlewares/api.key.header.middleware
 
 // Module
 import { VideoModule } from '@video/video.module';
-import { SemaphoreModule } from '@semaphore/semaphore.module';
 import { TaskModule } from '@task/task.module';
 
 @Module({
@@ -23,7 +22,6 @@ import { TaskModule } from '@task/task.module';
     ScheduleModule.forRoot(),
     TaskModule,
     VideoModule,
-    SemaphoreModule
   ],
   controllers: [],
   providers: [],
