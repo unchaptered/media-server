@@ -35,7 +35,7 @@ B. Get Started
 
 몇 가지 문제점에 대한 재해 복구(Failover) 및 예방 방법을 통해서 프로덕션 레벨에서 사용가능 함을 입증했습니다.
 
-개략적으로 살펴보면 다음과 같은 주요 설계 포인트를 잡았습니다.
+개략적으로 살펴보면 다음과 같은 주요 설계 포인트를 
 
 - API 서버와 영상 처리 서버를 발행-구독 패턴으로 연결
 - 영상 처리 서버가 주기적으로 구독을 할 수 있도록 크론 스케쥴러를 구성
@@ -45,7 +45,7 @@ B. Get Started
 
 ### A.1. 인삿말 그리고 기여자
 
-안녕하세요, 프로젝트를 생성한 [이민석, linkedIn](https://www.linkedin.com/feed/)입니다.<br>
+안녕하세요, 프로젝트를 생성한 [이민석, linkedIn](https://www.linkedin.com/in/minseok-lee)입니다.<br>
 
 프로젝트 진행 간에 궁금한 부분은 [media server 이슈](https://github.com/unchaptered/media-server/issues)에 올려주시면 감사드리겠습니다.
 
