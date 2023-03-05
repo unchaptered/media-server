@@ -5,6 +5,19 @@
 A. 개요
     A.1. 인삿말 그리고 기여자
     A.2. 미디어 서버란 무엇인가?
+    A.3. 왜 EC2(ECS) 환경에 미디어 서버를 맏느는가?
+B. Get Started
+    B.1. IAM 생성하기
+    B.2. S3, SQS 생성 및 연결하기
+    B.3. 환경변수 파일(.env) 생성하기
+```
+
+## A. 개요
+
+```cmd
+A. 개요
+    A.1. 인삿말 그리고 기여자
+    A.2. 미디어 서버란 무엇인가?
     A.3. 왜 EC2(ECS) 환경에 미디어 서버를 만드는가?
 B. Get Started
     B.1. IAM 생성하기
@@ -63,10 +76,10 @@ MediaConvert와 같은 완전관리형 서비스의 경우 아무래도 비용�
 
 이 프로젝트를 가동하기 위해서 다음을 진행해주세요.
 
-- ✔️ [IAM 생성하기]
-- ✔️ [S3, SQS 생성 및 연결하기 : 튜토리얼 보기]
-- ✔️ [환경변수 파일(.env) 생성하기]
-- ✔️ [FFmpeg 설치하기]
+- ✔️ [IAM 생성하기](./README.md#b1-iam-생성하기)
+- ✔️ [S3, SQS 생성 및 연결하기 : 튜토리얼 보기](./README.md#b2-s3-sqs-생성-및-연결하기)
+- ✔️ [환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)
+- ✔️ [FFmpeg 설치하기](./README.md#b4-ffmpeg-설치하기)
 
 ### B.1. IAM 생성하기
 
@@ -104,3 +117,8 @@ AWS_SQS_IN_PROCESSING_QUEUE_URL = S3와 연동되지 않은 SQS URL
 
 - [GitHub FFmpeg@autobuild-2023-03-04-12-47](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2023-03-04-12-47)
 - [윈도우 FFmpeg 설치 및 사용 방법 – gif 동영상 변환을 위해](https://happist.com/577463/%EC%9C%88%EB%8F%84%EC%9A%B0-ffmpeg-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95#hwangyeong_byeonsu_pyeonjib-eseo_saelo_mandeulgi)
+
+### C. ETC
+
+- [기여자](./CONTRIBUTING.md)
+- [프로젝트 라이센스](./LICENSE)
