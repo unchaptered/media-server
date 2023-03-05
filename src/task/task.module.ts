@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TaskService } from '@task/task.service';
+
+import { AwsModule } from '@aws/aws.module';
+import { ChalkModule } from '@chalk/chalk.module';
+import { FfmpegModule } from '@ffmpeg/ffmpeg.module';
 import { SemaphoreModule } from '@semaphore/semaphore.module';
 
+import { TaskService } from '@task/task.service';
+
 @Module({
-  imports: [SemaphoreModule],
+  imports: [SemaphoreModule, AwsModule, ChalkModule, FfmpegModule],
   controllers: [],
   providers: [TaskService],
   exports: [TaskService]
