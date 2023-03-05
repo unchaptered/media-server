@@ -1,29 +1,15 @@
 # 발행-구독을 이용한 API 서버와 미디어 처리 서버 연동
 
-
-```cmd
-A. 개요
-    A.1. 인삿말 그리고 기여자
-    A.2. 미디어 서버란 무엇인가?
-    A.3. 왜 EC2(ECS) 환경에 미디어 서버를 맏느는가?
-B. Get Started
-    B.1. IAM 생성하기
-    B.2. S3, SQS 생성 및 연결하기
-    B.3. 환경변수 파일(.env) 생성하기
-```
-
-## A. 개요
-
-```cmd
-A. 개요
-    A.1. 인삿말 그리고 기여자
-    A.2. 미디어 서버란 무엇인가?
-    A.3. 왜 EC2(ECS) 환경에 미디어 서버를 만드는가?
-B. Get Started
-    B.1. IAM 생성하기
-    B.2. S3, SQS 생성 및 연결하기
-    B.3. 환경변수 파일(.env) 생성하기
-```
+- [A. 개요](./README.md#a-개요)
+    - [A.1. 인삿말 그리고 기여자](./README.md#a1-인삿말-그리고-기여자)
+    - [A.2. 미디어 서버란 무엇인가?](./README.md#a2-미디어-서버란-무엇인가)
+    - [A.3. 왜 EC2(ECS) 환경에 미디어 서버를 만드는가?](./README.md#a3-왜-ec2ecs-환경에-미디어-서버를-만드는가)
+- [B. Get Started](./README.md#b-get-started)
+    - [B.1. IAM 생성하기](./README.md#b1-iam-생성하기)
+    - [B.2. S3, SQS 생성 및 연결하기](./README.md#b2-s3-sqs-생성-및-연결하기)
+    - [B.3. 환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)
+    - [B.4. FFmpeg 설치하기](./README.md#b4-ffmpeg-설치하기)
+- [C. ETC](./README.md#c-etc)
 
 ## A. 개요
 
