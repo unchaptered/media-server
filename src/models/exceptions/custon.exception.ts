@@ -3,7 +3,7 @@ import chalk from 'chalk';
 export type WORKER_CALL_TYPE = '+' | '-';
 export type WORKER_STEP_TYPE = 'STEP 1' | 'STEP 2' | 'STEP 3' | 'STEP 4' | 'STEP 5' | 'STEP 6' | 'STEP 7';
 export type WORKER_STEPPASS_TYPE = 'PASS 1';
-export type WOKRER_STEPERR_TYPE = 'ERROR 1' | 'ERROR 2' | 'ERROR 3' | 'ERROR 4' | 'ERROR 5' | 'ERROR 6' | 'ERROR 7';
+export type WOKRER_STEPERR_TYPE = 'ERROR 1' | 'ERROR 2' | 'ERROR 3' | 'ERROR 4' | 'ERROR 5' | 'ERROR 6' | 'ERROR 7' | 'ERROR 8';
 export type WOKRER_TYPE = WORKER_CALL_TYPE | WORKER_STEP_TYPE | WOKRER_STEPERR_TYPE | WORKER_STEPPASS_TYPE;
 
 export type WORKER_LOG_RECORD = Record<WOKRER_TYPE, string>;

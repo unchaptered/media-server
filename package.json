@@ -50,6 +50,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "semaphore": "^1.1.0",
+    "ts-jest": "^29.0.5",
     "tslib": "^2.5.0"
   },
   "devDependencies": {
