@@ -1,5 +1,7 @@
 # 발행-구독을 이용한 API 서버와 미디어 처리 서버 연동
 
+<img src="./docs/banner.png" style="width: 800px;">
+
 - [A. 개요](./README.md#a-개요)
     - [A.1. 인삿말 그리고 기여자](./README.md#a1-인삿말-그리고-기여자)
     - [A.2. 미디어 서버란 무엇인가?](./README.md#a2-미디어-서버란-무엇인가)
@@ -12,8 +14,6 @@
 - [C. ETC](./README.md#c-etc)
 
 ## A. 개요
-
-<img src="./docs/banner.png" style="width: 800px;">
 
 분산 서비스에서 **고가용성**, **고확장성**을 충족하는 미디어 서버를 구현하였습니다.
 
