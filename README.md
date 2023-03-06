@@ -31,11 +31,12 @@
 
 ### A.1. 인삿말 그리고 기여자
 
-안녕하세요, 프로젝트를 생성한 [이민석, linkedIn](https://www.linkedin.com/in/minseok-lee)입니다.<br>
-
 프로젝트 진행 간에 궁금한 부분은 [media server 이슈](https://github.com/unchaptered/media-server/issues)에 올려주시면 감사드리겠습니다.
 
-S3, SQS, Lambda 관련된 기술 도움을 준 [playhuck](https://github.com/playhuck) 덕분에 프로젝트를 완성도 있게 만들 수 있었습니다.
+| 이름  | GitHub           | LinkedIn |
+| ----- | --------------- | --------- |
+| 이민석 | [unchaptered](https://github.com/unchaptered) | [www.linkedin.com/in/minseok-lee](www.linkedin.com/in/minseok-lee) |
+| 김주혁 | [playhuck](https://github.com/playhuck) | [www.linkedin.com/in/playhuck](www.linkedin.com/in/playhuck) |
 
 ### A.2. 미디어 서버란 무엇인가?
 
