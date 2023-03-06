@@ -10,9 +10,7 @@ describe('[UNIT] FFmpeg Service', () => {
 
     let sutFfmpeg: FfmpegService;
 
-    beforeEach(() => {
-        sutFfmpeg = new FfmpegService();
-    });
+    beforeEach(() => sutFfmpeg = new FfmpegService());
 
     describe('[REF]', () => {
         it('FfmpegService must be defined', () => expect(FfmpegService).toBeDefined());
