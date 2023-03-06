@@ -25,13 +25,13 @@ export class TaskService {
     ) {}
 
     @Cron('*/5 * * * * *')
-    toH264() {
+    toH264(): Promise<void> {
 
         this.TASK_ID ++;
 
-        if (!this.semaphoreService.isAvailableSem()) return;
+        if (!this.semaphoreService.isAvailableSemByTaskName('to264')) return;
 
-        this.semaphoreService.getSemInstance().take(async () => {
+        this.semaphoreService.getSemInstanceByTaskName('to264').take(async () => {
 
             const TASK_ID = this.TASK_ID;
 
@@ -78,7 +78,7 @@ export class TaskService {
             } finally {
 
                 this.chalk.logStep(TASK_ID, '-');
-                this.semaphoreService.getSemInstance()?.leave();
+                this.semaphoreService.getSemInstanceByTaskName('to264')?.leave();
 
             }
         });

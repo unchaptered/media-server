@@ -1,20 +1,30 @@
 import semaphore from 'semaphore';
 import { Injectable } from '@nestjs/common';
+
+type TASK_NAME = 'to264';
+type TASK_MAP = Record<TASK_NAME, any>;
+
 @Injectable()
 export class SemaphoreService {
 
-    static sem: any;
+    static mainSemaphore: any;
+
+    static taskMap: TASK_MAP;
 
     constructor() {
-        SemaphoreService.sem = semaphore(2);
+        SemaphoreService.mainSemaphore = semaphore(2);
+        SemaphoreService.taskMap = {
+            'to264': SemaphoreService.mainSemaphore,
+        };
     }
 
-    public getSemInstance() {
-        return SemaphoreService.sem;
+    public getSemInstanceByTaskName(task: TASK_NAME) {
+        return SemaphoreService.taskMap[task];
     }
 
-    public isAvailableSem(): boolean {
-        return SemaphoreService.sem.available();
+    public isAvailableSemByTaskName(task: TASK_NAME): boolean {
+        return SemaphoreService.taskMap[task].available();
     }
+
 
 }
