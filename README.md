@@ -164,7 +164,15 @@ FFmpeg 테스트, Semaphore 테스트 등의 핵심 로직을 테스트했습니
 
 <br>
 
-### C. ETC
+## C. 자동화
+
+### C.1. 환경변수 생성 자동화
+
+Terraform을 사용할 경우, env 파일을 자동으로 생성할 수 있습니다.
+
+따라서 [env.sh](./env.sh)를 구현하였습니다.
+
+## D. ETC
 
 - [기여자](./CONTRIBUTING.md)
 - [프로젝트 라이센스](./LICENSE)
