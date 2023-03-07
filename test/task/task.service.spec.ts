@@ -10,7 +10,8 @@ import { AwsSqsService } from '@aws/aws.sqs.service';
 import { FfmpegService } from '@ffmpeg/ffmpeg.service';
 import { SemaphoreService } from '@semaphore/semaphore.service';
 
-describe('[UNIT] Semaphore Service', () => {
+
+describe('[UNIT] Task Service', () => {
 
     let sutTaskService: TaskService;
 
