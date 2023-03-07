@@ -2,36 +2,43 @@
 
 <img src="./docs/banner.png" style="width: 800px;">
 
-- [A. 개요](./README.md#a-개요)
-    - [A.1. 인삿말 그리고 기여자](./README.md#a1-인삿말-그리고-기여자)
-    - [A.2. 미디어 서버란 무엇인가?](./README.md#a2-미디어-서버란-무엇인가)
-    - [A.3. 왜 EC2(ECS) 환경에 미디어 서버를 만드는가?](./README.md#a3-왜-ec2ecs-환경에-미디어-서버를-만드는가)
-- [B. Get Started](./README.md#b-get-started)
-    - [B.1. IAM 생성하기](./README.md#b1-iam-생성하기)
-    - [B.2. S3, SQS 생성 및 연결하기](./README.md#b2-s3-sqs-생성-및-연결하기)
-    - [B.3. 환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)
-    - [B.4. FFmpeg 설치하기](./README.md#b4-ffmpeg-설치하기)
+- [A. Get Started](./README.md#b-get-started)
+- [B. 개요](./README.md#b-개요)
+  - [B.1. 인삿말 그리고 기여자](./README.md#b1-인삿말-그리고-기여자)
+  - [B.2. 기존 아키텍처](./README.md#b2-기존-아키텍처)
+  - [B.3. 신규 아키텍처](./README.md#b3-신규-아키텍처)
+  - [B.4. 개략적인 설계](./README.md#b4-개략적인-설계)
+    - [B.4.1. 미디어 처리 로직](./README.md#b41-미디어-처리-로직)
+    - [B.4.2. 미디어 처리 실패](./README.md#b42-미디어-처리-실패-처리-로직)
+    - [B.4.3. 최대 미디어 처리량](./README.md#b43-최대-미디어-처리량-제한-로직)
+  - [B.5. 결론, 가능성, 못한 부분](./README.md#b5-결론-가능성-못한-부분)
 - [C. ETC](./README.md#c-etc)
 
-## A. 개요
+## A. Get Started
 
-분산 서비스에서 **고가용성**, **고확장성**을 충족하는 미디어 서버를 구현하였습니다.
+프로젝트를 가동하기 위한 가이드 문서입니다. <br>
+Windows 11 기준으로 작성되었습니다.
 
-또한 중소기업 및 스타트업에서 사용 가능한 적정 수준의 기술을 사용하여 시스템 요구사항을 달성했습니다.
+1. [Terraform 사용자 가이드](./docs/guide/terraform-guide.md)
+2. [일반 사용자 가이드](./docs/guide/basic-guide.md)
 
-몇 가지 문제점에 대한 재해 복구(Failover) 및 예방 방법을 통해서 프로덕션 레벨에서 사용가능 함을 입증했습니다.
+위 가이드를 따라서 필수 설치항목을 따라해주세요.
 
-개략적으로 살펴보면 다음과 같은 주요 설계 포인트를 잡았습니다.
+```sh
+npm run start:dev     # 서버가동
 
-- API 서버와 영상 처리 서버를 발행-구독 패턴으로 연결
-- 영상 처리 서버가 주기적으로 구독을 할 수 있도록 크론 스케쥴러를 구성
-- 스케쥴러의 최대 구독량을 제한하기 위해서 Semaphore로 실행 함수를 포장
+POST localhost:3000/video/pre-signed-url
+PUT {{pre-signed-url}}
+```
 
-더 자세한 내용은 [노션 페이지](https://unchaptered.notion.site/7be4cdb0474846be84a64dc0afc0422a)를 참고해주세요.
+API 호출 방식을 사용하기 싫은 경우, S3 버킷에 직접 origin_파일명.mp4 형태로 동영상(.mp4)를 넣어주세요.
 
-<img src="./docs/architecture.png" style="width: 800px;">
+> 파일명이 달라서 발생하는 엣지케이스는 고려되지 않았습니다. <br>
+> 호기심에 다른 형태의 파일명을 올리셨다면, S3 오브젝트와 SQS 메세지를 AWS Console을 통해서 제거하셔야 합니다.
 
-### A.1. 인삿말 그리고 기여자
+## B. 개요
+
+### B.1. 인삿말 그리고 기여자
 
 프로젝트 진행 간에 궁금한 부분은 [media server 이슈](https://github.com/unchaptered/media-server/issues)에 올려주시면 감사드리겠습니다.
 
@@ -40,118 +47,122 @@
 | 이민석 | [unchaptered](https://github.com/unchaptered) | [https://www.linkedin.com/in/minseok-lee](https://www.linkedin.com/in/minseok-lee) |
 | 김주혁 | [playhuck](https://github.com/playhuck) | [https://www.linkedin.com/in/playhuck](https://www.linkedin.com/in/playhuck) |
 
-### A.2. 미디어 서버란 무엇인가?
 
-미디어 서버는 미디어 처리를 담당하는 서버입니다. <br>
-미디어 처리란 이미지, 동영상 들을 가공하거나 활용한 작업을 포괄적으로 포함하였습니다.
+<br>
 
-미디어 처리는 CPU(GPU) 자원을 많이 요구할 뿐 아니라, 처리 시간도 API 서버 보다 수배~수십배 오래 걸리는 작업입니다. 따라서 API 서버와 분리하여 다음과 같은 형식으로 미디어 처리를 하게 됩니다.
+### B.2. 기존 아키텍처
 
-1. Lambda : 저용량 이미지 파일의 가공 등이 가능
-2. MediaConvert : 동영상 파일의 가동 등이 가능
-3. EC2(ECS) + ? : 동영상 파일의 가공 등이 가능
+일반적인 분산 서비스를 구현하였거나 구현할 능력이 있다고 가정하였습니다.
 
-### A.3. 왜 EC2(ECS) 환경에 미디어 서버를 만드는가?
+✔️ VPC 3-Tier Architecture 위에 설계 되었습니다. <br>
+✔️ N개의 AZ 영역에 배포된 서비스는 ALB를 통해서 ASG로 배포됩니다. <br>
+✔️ API 서버는 일반적인 사용자 요청만 처리하고 미디어 파일의 업로드는 [AWS S3 PreSignedURL](https://medium.com/@aidan.hallett/securing-aws-s3-uploads-using-presigned-urls-aa821c13ae8d)을 통해서 처리해서 API 서버 병목을 예방하고 있습니다. <br>
+✔️ 모든 동영상 파일은 RDS에 기록되며, 미디어 처리 완료 여부가 기록되고 있습니다. 미디어 서버에서는 이를 전부 확인해서 최신순으로 처리하고 있습니다.
 
-MediaConvert와 같은 완전관리형 서비스의 경우 아무래도 비용이 비쌀 수밖에 없습니다. <br>
-또한 서비스에 필요한 복잡하고 연속적인 영상처리 작업의 경우 지원하지 않을 확률이 높습니다.<br>
-또한 AWS 종속성이 강해지기 때문에 이를 경계하는 개발자들도 많습니다.
+😂 일반적으로 미디어 서버는 CPU 자원을 임계 수치(70%) 까지 활용하도록 설계해야 합니다. 따라서 일반적인 스케일업 조건을 걸기 애매합니다.<br>
+😂 기존의 구조는 동일한 파일이 여러번 분석될 가능성이 존재합니다. 이는 심각한 리소스 낭비로 아키텍처 수정을 통해 해결하고자 합니다. <br>
+😂 팀에 DevOps가 따로 없기 떄문에 인프라 자원을 최소한으로 사용하여 `코드 레벨의 솔루션`을 구축하고자 합니다.
 
-따라서, 별도의 EC2(ECS) 환경에서 가동이 가능한 미디어 서버를 구축하게 됩니다.
+![](./docs/architecture-prerequisites.png)
 
-따라서 이 프로젝트에서는 미디어 서버를 **잘 구현하는 방법**을 안내하고자 했습니다.
+<br>
 
-## B. Get Started
+### B.3. 신규 아키텍처
 
-이 프로젝트를 가동하기 위해서 다음을 진행해주세요.
+미디어 처리 작업의 다음 특성을 고려해서 AWS SQS를 활용한 메세지 기반 서버로 변경하였습니다.
 
-- ✔️ [IAM 생성하기](./README.md#b1-iam-생성하기)
-- ✔️ [S3, SQS 생성 및 연결하기 : 튜토리얼 보기](./README.md#b2-s3-sqs-생성-및-연결하기)
-- ✔️ [환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)
-- ✔️ [FFmpeg 설치하기](./README.md#b4-ffmpeg-설치하기)
+✔️ 미디어 처리의 완료 시간을 정확하기 에측하는 것은 어렵습니다. <br>
+✔️ 미디어 처리는 제한된 CPU 자원으로 최적화된 동시 수량 N개 만큼만 가동해야 합니다. <br>
+✔️ 미디어 처리량이 적거나 많을 경우 `스케일링`에 유연한 구조여야 합니다. <br>
+✔️ 복수의 미디어 서버가 동일한 작업을 진행하는 `경쟁 조건`이 예방되어야 합니다. <br>
+✔️ 미디어 처리 중 실패한 파일을 다시 분석하는 로직이 존재해야 합니다. <br>
 
-### B.1. IAM 생성하기
+### B.4. 개략적인 설계
 
-[AWS SDK 사용을 위한 IAM 가이드](https://unchaptered.notion.site/AWS-SDK-IAM-0ba94cf3c58f48a79eabe1bb878f49c5)를 참고해주세요.
+#### B.4.1. 미디어 처리 로직
 
-만약 **Terraform@1.3.9 사용자**라면 [B.5. (선택) terraform.tf 파일 생성하기](./README.md#b5-선택-terraformtf-파일-생성하기)을 참고해주세요.
+S3의 이벤트 알림을 통해서 SQS로 메세지를 발행합니다.
 
-### B.2. S3, SQS 생성 및 연결하기
+발행된 메세지는 작업 `대기열 Queue`에 발행됩니다.
 
-[S3 + SQS를 이용한 이벤트 생성 가이드](https://unchaptered.notion.site/S3-SQS-f207c3dd737743bea25c41a473b376bc)를 참고해주세요.
+각 미디어 서버는 5초 주기로 `작업 대기열 Queue`에서 1개의 메세지를 구독해 작업합니다.
 
-만약 **Terraform@1.3.9 사용자**라면 [B.5. (선택) terraform.tf 파일 생성하기](./README.md#b5-선택-terraformtf-파일-생성하기)을 참고해주세요.
+각 작업 내역은 `작업 중 Queue`에 기록되며 미디어 처리에 실패하면 1개의 잔여 메세지가 작업 중 Queue에 남습니다. _[실패한 로직은 미디어 처리 실패 로직](./README.md#a41-미디어-처리-로직)에서 제어합니다._
 
-### B.3. 환경변수 파일(.env) 생성하기
+미디어 처리에 실패하면 `작업 중 Queue`에 할당한 메세지를 제거하고 처리된 영상을 S3에 업로드합니다.
 
-프로젝트 루트 경로에 다음의 파일을 생성해주세요.
+![](./docs/architecture-design.png)
 
-```cmd
-PORT = 3000
+#### B.4.2. 미디어 처리 실패 처리 로직
 
-AWS_S3_REGION = S3 리전 명
-AWS_S3_ACCESS_KEY = S3FullAccess 권한을 가진 IAM 공개키
-AWS_S3_SECRET_KEY = S3FullAccess 권한을 가진 IAM 비밀키
-AWS_S3_BUCKET_NAME = S3 버킷 명
+미디어 처리에 실패할 경우, 1개의 잔여 메세지가 `작업 중 Queue`에 남습니다.
 
-AWS_SQS_REGION = SQS 리전 명
-AWS_SQS_ACCESS_KEY = SQSFullAccess 권한을 가진 IAM 공개키
-AWS_SQS_SECRET_KEY = SQSFullAccess 권한을 가진 IAM 비밀키
-AWS_SQS_READY_QUEUE_URL = S3와 연동된 SQS URL
-AWS_SQS_IN_PROCESSING_QUEUE_URL = S3와 연동되지 않은 SQS URL
+이 메세지는 7초 간격으로 조회하여 `작업 중 Queue`에 다시 발행하고 제거됩니다.
+
+![](./docs/architecture-design-error-handling.png)
+
+#### B.4.3. 최대 미디어 처리량 제한 로직
+
+Cron과 Semaphore 라이브러리를 활용해서 5초에 한 번 작업자를 호출하고 최대 작업자는 2명인 구조로 만들었습니다. 최대 작업자를 변경하고 싶다면 [SemaphoreService.ts](./src/semaphore/semaphore.service.ts)의 생성자 안의 다음 숫자 2를 원하는 숫자 N으로 변경하면 됩니다.
+
+```typescript
+SemaphoreService.mainSemaphore = semaphore(2);
+SemaphoreService.subSemaphore = semaphore(2);
 ```
 
-### B.4. FFmpeg 설치하기
+Cron은 스케쥴러 라이브러리 중 하나로 **일정 시간마다 동일한 작업을 진행**합니다.
 
-1. 사용자 환경의 OS에 맞는 FFmpeg 압축 파일을 다운로드 받아주세요.
-2. 원하는 경로에 압축 파일을 풀되, 상위 폴더에 한글이 들어가지 않도록 해주세요.
-3. 압축 파일을 풀고 나면 bin/ 폴더가 보이는데 ~bin/ 까지의 경로를 환경 변수에 등록해주세요.
-4. VSC 혹은 cmd를 전부 종료하고 다시 키고 ffmpeg을 쳐서 설치를 확인해주세요.
+Semaphore는 **작업 최대량을 제한할 수 있는 손쉬운 기능을 제공하는 라이브러리**입니다.
 
-- [GitHub FFmpeg@autobuild-2023-03-04-12-47](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2023-03-04-12-47)
-- [윈도우 FFmpeg 설치 및 사용 방법 – gif 동영상 변환을 위해](https://happist.com/577463/%EC%9C%88%EB%8F%84%EC%9A%B0-ffmpeg-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95#hwangyeong_byeonsu_pyeonjib-eseo_saelo_mandeulgi)
+매우 생소한 개념이라고 생각해서 Semaphore를 `작업자 집단`으로 부르고, 작업 최대량 만큼의 `작업자`가 집단에 존재한다고 생각하고 설명하겠습니다.
 
-### B.5. (선택) terraform.tf 파일 생성하기
+- 스케쥴러는 5초에 한 번 가동됩니다.
+- 스케쥴러는 작업자 집단(Semaphore)이 하고 있는 일이 있는지 확인합니다.
+  - 하고 있는 일이 있다면, 요청을 마무리합니다.
+  - 하고 있는 일이 없다면, 요청을 전달하며 스케쥴러 함수는 종료합니다.
+- 작업자 집단(Semaphore)은 개별 작업자에게 SQS에서 메세지를 구독해 작업을 진행할 것을 명령합니다.
+  - 작업 대기중 Queue에 메세지가 없다면, 작업을 종료합니다.
+  - 작업 대기중 Queue에 메세지가 있다면, 작업을 진행합니다.
+  - 모든 결과가 끝나면, 작업자는 작업자 집단(Semaphore)의 작업 진행 수를 1 낮춰서 자신의 업무 종료를 알립니다.
 
+![](./docs/architecture-design-semaphore.png)
 
+### B.5. 결론, 가능성, 못한 부분
 
-```json
-variable "region" {
-  type    = string
-  default = "리전이름" 
-  <!-- 여기서는 ap-northeast-2를 사용했습니다. -->
-}
+#### B.5.1. 결론
 
-variable "s3_bucket_name" {
-  type    = string
-  default = "버킷이름"
-}
+기존의 서비스 아키텍처를 개선하면서 인프라 자원을 최소한으로 활용하였습니다.<br>
+_스테이지(local, dev...) 별 배포 자동화를 위한 Terraform은 선택 옵션입니다._
 
-variable "sqs_queue_name" {
-  type    = string
-  default = "큐 이름"
-}
+또한 주어진 요구사항을 위해 Cron, Semaphore, SQS를 적절히 활용하였습니다.
 
-variable "iam_user_name" {
-  type    = string
-  default = "IAM 유저 이름"
-}
-```
+- Cron 스케쥴러, Semaphore를 통해서 최대 작업량을 제한한 점
+- SQS를 최소한 활용하여 메세지를 발행하고 예외처리가 되어있는 점
 
-### B.6. terraform으로 배포 후 IAM 확인하기
+배포 환경에서 수동으로 시간당 미디어 처리 최대치를 측정하면, semaphore(2)를 semaphore(n)으로 손쉽게 변경할 수 있습니다.
 
-아래 명령어로 인프라 배포를 진행해주세요.
+#### B.5.2. 가능성
 
-```cmd
-terraform apply
-```
+SQS에 쌓인 메세지의 증감은 다음을 의미할 것입니다.
 
-민감성 정보인 IAM을 아래 명령어로 확인하고 [B.3. 환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)을 진행해주세요.
+- 메세지의 증가 : 미디어 서버의 부하 : 서버 증설의 필요
+- 메세지의 감소 : 미디어 서버의 낭비 : 서버 증감의 필요
 
-```cmd
-terraform output s3_sqs_user_access_key
-terraform output s3_sqs_user_secret_access_key
-```
+이를 이용해서 SQS + ASG 스케일업 조건을 걸어서 확장성 있는 미디어 서버 구현이 가능합니다.
+
+대다수의 미디어 처리는 GPU가 3~8배 이상이 빠르기 떄문에, 충분한 양의 AWS GPU Instance를 확보하면 매우 효율적으로 운영이 가능합니다.
+
+#### B.5.3. 아쉬운 점
+
+FFmpeg 테스트, Semaphore 테스트 등의 핵심 로직을 테스트했습니다.
+
+하지만 Cron, Semaphore 내부의 비즈니스 로직 테스트를 하지 못했습니다.
+
+이 부분이 아쉬웠고 개선된 테스트 코드로 비즈니스 로직의 안전성을 점검했으며 좋았을 것 같습니다.
+
+추가적으로 Terraform 테스트, 인프라 종단 테스트 등도 하지 못해서 아쉬웠습니다.
+
+<br>
 
 ### C. ETC
 
