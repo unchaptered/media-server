@@ -1,0 +1,180 @@
+[0m# aws_iam_access_key.s3_sqs_user_access_key:
+resource "aws_iam_access_key" "s3_sqs_user_access_key" {
+    [1m[0mcreate_date[0m[0m          = "2023-03-07T08:15:49Z"
+    [1m[0mid[0m[0m                   = "AKIA2P7KVED3OIS54Q4W"
+    [1m[0msecret[0m[0m               = (sensitive value)
+    [1m[0mses_smtp_password_v4[0m[0m = (sensitive value)
+    [1m[0mstatus[0m[0m               = "Active"
+    [1m[0muser[0m[0m                 = "kevin-media-iam-user"
+}
+
+# aws_iam_user.s3_sqs_user:
+resource "aws_iam_user" "s3_sqs_user" {
+    [1m[0marn[0m[0m           = "arn:aws:iam::721509753078:user/kevin-media-iam-user"
+    [1m[0mforce_destroy[0m[0m = false
+    [1m[0mid[0m[0m            = "kevin-media-iam-user"
+    [1m[0mname[0m[0m          = "kevin-media-iam-user"
+    [1m[0mpath[0m[0m          = "/"
+    [1m[0mtags[0m[0m          = {}
+    [1m[0mtags_all[0m[0m      = {}
+    [1m[0munique_id[0m[0m     = "AIDA2P7KVED3FISTX75EQ"
+}
+
+# aws_iam_user_policy_attachment.s3_policy_attachment:
+resource "aws_iam_user_policy_attachment" "s3_policy_attachment" {
+    [1m[0mid[0m[0m         = "kevin-media-iam-user-20230307080910368900000002"
+    [1m[0mpolicy_arn[0m[0m = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    [1m[0muser[0m[0m       = "kevin-media-iam-user"
+}
+
+# aws_iam_user_policy_attachment.sqs_policy_attachment:
+resource "aws_iam_user_policy_attachment" "sqs_policy_attachment" {
+    [1m[0mid[0m[0m         = "kevin-media-iam-user-20230307080910144100000001"
+    [1m[0mpolicy_arn[0m[0m = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+    [1m[0muser[0m[0m       = "kevin-media-iam-user"
+}
+
+# aws_s3_bucket.video_bucket:
+resource "aws_s3_bucket" "video_bucket" {
+    [1m[0marn[0m[0m                         = "arn:aws:s3:::kevin-media-s3-bucket"
+    [1m[0mbucket[0m[0m                      = "kevin-media-s3-bucket"
+    [1m[0mbucket_domain_name[0m[0m          = "kevin-media-s3-bucket.s3.amazonaws.com"
+    [1m[0mbucket_regional_domain_name[0m[0m = "kevin-media-s3-bucket.s3.ap-northeast-2.amazonaws.com"
+    [1m[0mforce_destroy[0m[0m               = false
+    [1m[0mhosted_zone_id[0m[0m              = "Z3W03O7B5YMIYP"
+    [1m[0mid[0m[0m                          = "kevin-media-s3-bucket"
+    [1m[0mobject_lock_enabled[0m[0m         = false
+    [1m[0mregion[0m[0m                      = "ap-northeast-2"
+    [1m[0mrequest_payer[0m[0m               = "BucketOwner"
+    [1m[0mtags[0m[0m                        = {}
+    [1m[0mtags_all[0m[0m                    = {}
+
+    grant {
+        [1m[0mid[0m[0m          = "1fbe8c474bd30df0cedc662d42adceaa695683098fbbcaa146e78e3edad2c4b2"
+        [1m[0mpermissions[0m[0m = [
+            "FULL_CONTROL",
+        ]
+        [1m[0mtype[0m[0m        = "CanonicalUser"
+    }
+
+    server_side_encryption_configuration {
+        rule {
+            [1m[0mbucket_key_enabled[0m[0m = false
+
+            apply_server_side_encryption_by_default {
+                [1m[0msse_algorithm[0m[0m = "AES256"
+            }
+        }
+    }
+
+    versioning {
+        [1m[0menabled[0m[0m    = false
+        [1m[0mmfa_delete[0m[0m = false
+    }
+}
+
+# aws_s3_bucket_notification.video_bucket_put_notification:
+resource "aws_s3_bucket_notification" "video_bucket_put_notification" {
+    [1m[0mbucket[0m[0m      = "kevin-media-s3-bucket"
+    [1m[0meventbridge[0m[0m = false
+    [1m[0mid[0m[0m          = "kevin-media-s3-bucket"
+
+    queue {
+        [1m[0mevents[0m[0m    = [
+            "s3:ObjectCreated:*",
+        ]
+        [1m[0mid[0m[0m        = "tf-s3-queue-20230307075724406900000001"
+        [1m[0mqueue_arn[0m[0m = "arn:aws:sqs:ap-northeast-2:721509753078:kevin-media-main-sqs"
+    }
+}
+
+# aws_sqs_queue.video_bucket_main_sqs:
+resource "aws_sqs_queue" "video_bucket_main_sqs" {
+    [1m[0marn[0m[0m                               = "arn:aws:sqs:ap-northeast-2:721509753078:kevin-media-main-sqs"
+    [1m[0mcontent_based_deduplication[0m[0m       = false
+    [1m[0mdelay_seconds[0m[0m                     = 0
+    [1m[0mfifo_queue[0m[0m                        = false
+    [1m[0mid[0m[0m                                = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-main-sqs"
+    [1m[0mkms_data_key_reuse_period_seconds[0m[0m = 300
+    [1m[0mmax_message_size[0m[0m                  = 262144
+    [1m[0mmessage_retention_seconds[0m[0m         = 345600
+    [1m[0mname[0m[0m                              = "kevin-media-main-sqs"
+    [1m[0mpolicy[0m[0m                            = jsonencode(
+        {
+            Statement = [
+                {
+                    Action    = "SQS:SendMessage"
+                    Condition = {
+                        ArnEquals = {
+                            "aws:SourceArn" = "arn:aws:s3:::kevin-media-s3-bucket"
+                        }
+                    }
+                    Effect    = "Allow"
+                    Principal = {
+                        Service = "s3.amazonaws.com"
+                    }
+                    Resource  = "arn:aws:sqs:ap-northeast-2:721509753078:kevin-media-main-sqs"
+                    Sid       = "Allow S3 to send messages to the queue"
+                },
+            ]
+            Version   = "2012-10-17"
+        }
+    )
+    [1m[0mreceive_wait_time_seconds[0m[0m         = 0
+    [1m[0msqs_managed_sse_enabled[0m[0m           = true
+    [1m[0mtags[0m[0m                              = {}
+    [1m[0mtags_all[0m[0m                          = {}
+    [1m[0murl[0m[0m                               = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-main-sqs"
+    [1m[0mvisibility_timeout_seconds[0m[0m        = 30
+}
+
+# aws_sqs_queue.video_bucket_sub_sqs:
+resource "aws_sqs_queue" "video_bucket_sub_sqs" {
+    [1m[0marn[0m[0m                               = "arn:aws:sqs:ap-northeast-2:721509753078:kevin-media-sub-sqs"
+    [1m[0mcontent_based_deduplication[0m[0m       = false
+    [1m[0mdelay_seconds[0m[0m                     = 0
+    [1m[0mfifo_queue[0m[0m                        = false
+    [1m[0mid[0m[0m                                = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-sub-sqs"
+    [1m[0mkms_data_key_reuse_period_seconds[0m[0m = 300
+    [1m[0mmax_message_size[0m[0m                  = 262144
+    [1m[0mmessage_retention_seconds[0m[0m         = 345600
+    [1m[0mname[0m[0m                              = "kevin-media-sub-sqs"
+    [1m[0mreceive_wait_time_seconds[0m[0m         = 0
+    [1m[0msqs_managed_sse_enabled[0m[0m           = true
+    [1m[0mtags_all[0m[0m                          = {}
+    [1m[0murl[0m[0m                               = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-sub-sqs"
+    [1m[0mvisibility_timeout_seconds[0m[0m        = 30
+}
+
+# aws_sqs_queue_policy.namvideo_bucket_main_sqs_policy:
+resource "aws_sqs_queue_policy" "namvideo_bucket_main_sqs_policy" {
+    [1m[0mid[0m[0m        = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-main-sqs"
+    [1m[0mpolicy[0m[0m    = jsonencode(
+        {
+            Statement = [
+                {
+                    Action    = "SQS:SendMessage"
+                    Condition = {
+                        ArnEquals = {
+                            "aws:SourceArn" = "arn:aws:s3:::kevin-media-s3-bucket"
+                        }
+                    }
+                    Effect    = "Allow"
+                    Principal = {
+                        Service = "s3.amazonaws.com"
+                    }
+                    Resource  = "arn:aws:sqs:ap-northeast-2:721509753078:kevin-media-main-sqs"
+                    Sid       = "Allow S3 to send messages to the queue"
+                },
+            ]
+            Version   = "2012-10-17"
+        }
+    )
+    [1m[0mqueue_url[0m[0m = "https://sqs.ap-northeast-2.amazonaws.com/721509753078/kevin-media-main-sqs"
+}
+
+
+Outputs:
+
+s3_sqs_user_access_key = (sensitive value)
+s3_sqs_user_secret_access_key = (sensitive value)[0m[0m

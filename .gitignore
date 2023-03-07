@@ -36,6 +36,8 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# 보안상의 이유로 업로드 금지 항목
+
 # ENV
 .env
 *.env
@@ -45,3 +47,15 @@ lerna-debug.log*
 *.pem.*
 
 hello.json
+
+# TERRAFORM
+
+.terraform
+.terraform.lock.hcl
+.tfstate
+.tfvars
+*.tfvars
+*.tfstate
+*.tfstate.backup
+
+terraform.tf
