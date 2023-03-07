@@ -5,11 +5,11 @@ import { ConfigService } from "@nestjs/config";
 describe('[UNIT] Aws S3 Service', () => {
 
     let sutAwsS3Service: AwsS3Service;
-    let configService: ConfigService;
+    let mockConfigService: ConfigService;
 
     beforeEach(() => {
-        configService = new ConfigService();
-        sutAwsS3Service = new AwsS3Service(configService);
+        mockConfigService = new ConfigService();
+        sutAwsS3Service = new AwsS3Service(mockConfigService);
     });
 
     describe('[REF]', () => {
@@ -30,16 +30,15 @@ describe('[UNIT] Aws S3 Service', () => {
         const secretKey = 'sample-secret-key';
 
         beforeEach(() => {
-
             // MOCKING
-            configService.get = jest.fn(
+            mockConfigService.get = jest.fn(
                 (param: string): string => {
                     if (param === 'AWS_S3_BUCKET_NAME') return bucketName;
                     if (param === 'AWS_S3_REGION') return regionName;
                     if (param === 'AWS_S3_ACCESS_KEY') return accessKey;
                     if (param === 'AWS_S3_SECRET_KEY') return secretKey;
                 }
-            )
+            );
         });
 
         it('AwsS3Service.prototype.getPresignedUrl should return url', async () => {
