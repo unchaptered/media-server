@@ -12,7 +12,9 @@
     - [B.4.2. 미디어 처리 실패](./README.md#b42-미디어-처리-실패-처리-로직)
     - [B.4.3. 최대 미디어 처리량](./README.md#b43-최대-미디어-처리량-제한-로직)
   - [B.5. 결론, 가능성, 못한 부분](./README.md#b5-결론-가능성-못한-부분)
-- [C. ETC](./README.md#c-etc)
+- [C. 자동화](./README.md#c-자동화)
+  - [C.1. 환경변수 생성 자동화](./README.md#c1-환경변수-생성-자동화)
+- [D. ETC](./README.md#d-etc)
 
 ## A. Get Started
 
