@@ -92,21 +92,28 @@
     "transform": {
       "^.+\\.(t|j)s$": "esbuild-jest"
     },
+    "coverageDirectory": "coverage",
+    "coveragePathIgnorePatterns": [
+      "dist/",
+      "backup/",
+      "backup_integration/",
+      "coverage/lcov-report",
+      "test/"
+    ],
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@aws/(.*)": "<rootDir>/dist/aws/$1",
-      "^@task/(.*)": "<rootDir>/dist/task/$1",
-      "^@video/(.*)": "<rootDir>/dist/video/$1",
-      "^@chalk/(.*)": "<rootDir>/dist/chalk/$1",
-      "^@config/(.*)": "<rootDir>/dist/config/$1",
-      "^@ffmpeg/(.*)": "<rootDir>/dist/ffmpeg/$1",
-      "^@models/(.*)": "<rootDir>/dist/models/$1",
-      "^@semaphore/(.*)": "<rootDir>/dist/semaphore/$1",
-      "^@middlewares/(.*)": "<rootDir>/dist/middlewares/$1"
+      "^@aws/(.*)": "<rootDir>/src/aws/$1",
+      "^@task/(.*)": "<rootDir>/src/task/$1",
+      "^@video/(.*)": "<rootDir>/src/video/$1",
+      "^@chalk/(.*)": "<rootDir>/src/chalk/$1",
+      "^@config/(.*)": "<rootDir>/src/config/$1",
+      "^@ffmpeg/(.*)": "<rootDir>/src/ffmpeg/$1",
+      "^@models/(.*)": "<rootDir>/src/models/$1",
+      "^@semaphore/(.*)": "<rootDir>/src/semaphore/$1",
+      "^@middlewares/(.*)": "<rootDir>/src/middlewares/$1"
     }
   },
   "_moduleAliases": {
