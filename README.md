@@ -74,9 +74,13 @@ MediaConvert와 같은 완전관리형 서비스의 경우 아무래도 비용�
 
 [AWS SDK 사용을 위한 IAM 가이드](https://unchaptered.notion.site/AWS-SDK-IAM-0ba94cf3c58f48a79eabe1bb878f49c5)를 참고해주세요.
 
+만약 **Terraform@1.3.9 사용자**라면 [B.5. (선택) terraform.tf 파일 생성하기](./README.md#b5-선택-terraformtf-파일-생성하기)을 참고해주세요.
+
 ### B.2. S3, SQS 생성 및 연결하기
 
 [S3 + SQS를 이용한 이벤트 생성 가이드](https://unchaptered.notion.site/S3-SQS-f207c3dd737743bea25c41a473b376bc)를 참고해주세요.
+
+만약 **Terraform@1.3.9 사용자**라면 [B.5. (선택) terraform.tf 파일 생성하기](./README.md#b5-선택-terraformtf-파일-생성하기)을 참고해주세요.
 
 ### B.3. 환경변수 파일(.env) 생성하기
 
@@ -106,6 +110,48 @@ AWS_SQS_IN_PROCESSING_QUEUE_URL = S3와 연동되지 않은 SQS URL
 
 - [GitHub FFmpeg@autobuild-2023-03-04-12-47](https://github.com/BtbN/FFmpeg-Builds/releases/tag/autobuild-2023-03-04-12-47)
 - [윈도우 FFmpeg 설치 및 사용 방법 – gif 동영상 변환을 위해](https://happist.com/577463/%EC%9C%88%EB%8F%84%EC%9A%B0-ffmpeg-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95#hwangyeong_byeonsu_pyeonjib-eseo_saelo_mandeulgi)
+
+### B.5. (선택) terraform.tf 파일 생성하기
+
+
+
+```json
+variable "region" {
+  type    = string
+  default = "리전이름" 
+  <!-- 여기서는 ap-northeast-2를 사용했습니다. -->
+}
+
+variable "s3_bucket_name" {
+  type    = string
+  default = "버킷이름"
+}
+
+variable "sqs_queue_name" {
+  type    = string
+  default = "큐 이름"
+}
+
+variable "iam_user_name" {
+  type    = string
+  default = "IAM 유저 이름"
+}
+```
+
+### B.6. terraform으로 배포 후 IAM 확인하기
+
+아래 명령어로 인프라 배포를 진행해주세요.
+
+```cmd
+terraform apply
+```
+
+민감성 정보인 IAM을 아래 명령어로 확인하고 [B.3. 환경변수 파일(.env) 생성하기](./README.md#b3-환경변수-파일env-생성하기)을 진행해주세요.
+
+```cmd
+terraform output s3_sqs_user_access_key
+terraform output s3_sqs_user_secret_access_key
+```
 
 ### C. ETC
 
