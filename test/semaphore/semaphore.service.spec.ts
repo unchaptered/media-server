@@ -1,7 +1,6 @@
 
 import 'reflect-metadata';
 import { SemaphoreService } from '@semaphore/semaphore.service';
-import { async } from 'rxjs';
 
 describe('[UNIT] Semaphore Service', () => {
 
